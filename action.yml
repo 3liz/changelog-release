@@ -1,0 +1,27 @@
+name: 'Changelog release'
+description: 'Parse a changelog file and fill the GitHub release'
+inputs:
+  tag_name:
+    description: 'The tag to look in the file'
+    required: true
+  changelog_file:
+    description: 'The changelog file to use, default to CHANGELOG.md'
+  add_emojis:
+    description: 'If sub sections must have emojis'
+    default: 'true'
+  emoji_end_of_line:
+    description: 'If the emoji must be added at the end of the line. Otherwise, at the beginning.'
+    default: 'false'
+  add_raw_changelog_link:
+    description: "If the raw GitHub link must be generated"
+    default: 'true'
+  allow_failure:
+    description: 'If true, the script will not fail if the release is not found for instance.'
+    default: 'true'
+
+outputs:
+  markdown:
+    description: 'The markdown for the release content'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
