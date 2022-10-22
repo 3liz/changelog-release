@@ -1,0 +1,102 @@
+name: 🧪 Tests
+
+on:
+  push:
+    tags: "*"
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  tests:
+    name: "🎳 Tests"
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python: [
+            "3.8",
+            "3.9",
+            "3.10",
+        ]
+
+    steps:
+    - name: Get source code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python }}
+
+    - name: Upgrade PIP
+      run: pip install --upgrade pip
+
+    - name: Run tests
+      working-directory: tests
+      run: |
+        export PYTHONPATH="${{ github.workspace }}"
+        python -m unittest
+  flake8:
+    name: "❄ Flake8"
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Upgrade PIP
+        run: pip install --upgrade pip
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Python requirements
+        run: pip install flake8
+
+      - name: Run flake8
+        run: flake8
+
+  release:
+    name: "🚀 Release"
+    runs-on: ubuntu-20.04
+    needs: [tests, flake8]
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+
+    steps:
+
+    - name: Set env
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+    - name: Get source code
+      uses: actions/checkout@v3
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Upgrade PIP
+      run: pip install --upgrade pip
+
+    - name: Setup
+      run: |
+        VERSION=${GITHUB_REF:-0.0.0}
+        VERSION=${VERSION##*/}
+        sed -i "s/__VERSION__/${VERSION}/g" setup.py
+        sed -i "s/__VERSION__/${VERSION}/g" qgis_plugin_manager/__about__.py
+    - uses: actions/cache@v3.0.9
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('.github/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    - name: Install Python requirements
+      run: pip install -r .github/requirements.txt
+
+    - name : Get current changelog
+      run: qgis-plugin-ci changelog ${{ env.RELEASE_VERSION }} >> release.md

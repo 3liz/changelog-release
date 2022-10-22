@@ -110,8 +110,10 @@ def main():
     # Check input release tag
     tag = os.getenv("INPUT_TAG_NAME")
     if not tag:
-        logger.critical(f"Tag is missing")
-        exit(failure_code)
+        tag = os.getenv("GITHUB_REF_NAME")
+        if not tag:
+            logger.critical(f"Tag is missing : from the action input and from a tag")
+            exit(failure_code)
 
     changes = keepachangelog.to_raw_dict(str(changelog_file))
     info = None
