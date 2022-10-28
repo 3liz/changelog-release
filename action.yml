@@ -1,5 +1,8 @@
 name: 'Changelog release'
 description: 'Parse a changelog file and fill the GitHub release'
+branding:
+  icon: 'briefcase'
+  color: 'green'
 inputs:
   tag_name:
     description: 'The tag to look in the file'
