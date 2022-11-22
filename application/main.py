@@ -19,6 +19,8 @@ EMOJIS = {
     'test': '🎳',
     'translations': '🗺',
     'funders': '🙂',
+    'funder': '🙂',
+    'funded': '🙂',
 }
 
 
