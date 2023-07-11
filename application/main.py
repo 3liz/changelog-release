@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+
+__copyright__ = 'Copyright 2023, 3Liz'
+__license__ = 'GPL version 3'
+__email__ = 'info@3liz.org'
+
 import logging
 import os
 
@@ -158,7 +163,8 @@ def main():
     output = output.replace('%', '%25')
     output = output.replace('\n', '%0A')
     output = output.replace('\r', '%0D')
-    print(f"::set-output name=markdown::{output}")
+    with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+        print(f'name=markdown::{output}', file=fh)
 
     return tag
 
