@@ -1,2 +1,1 @@
-PyGithub==2.4.0
 keepachangelog==2.0.0

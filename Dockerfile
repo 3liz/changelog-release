@@ -1,6 +1,6 @@
-FROM python:3.10-slim
+FROM python:3.13-slim
 
-MAINTAINER Etienne Trimaille <etrimaille@3liz.com>
+LABEL org.opencontainers.image.authors="etrimaille@3liz.com"
 
 COPY requirements.txt /
 RUN pip install --upgrade pip && pip install -r requirements.txt

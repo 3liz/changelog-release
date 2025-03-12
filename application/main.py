@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
-__copyright__ = 'Copyright 2023, 3Liz'
+import sys
+
+from contextlib import nullcontext
+
+__copyright__ = 'Copyright 2025, 3Liz'
 __license__ = 'GPL version 3'
 __email__ = 'info@3liz.org'
 
@@ -52,16 +56,13 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-def to_bool(val: Union[str, int, float, bool], default_value: bool = True) -> bool:
+def to_bool(val: Union[str, int, float, bool, None]) -> bool:
     """ Convert a value to boolean """
     if isinstance(val, str):
         # For string, compare lower value to True string
         return val.lower() in ('yes', 'true', 't', '1')
-    elif not val:
-        # For value like False, 0, 0.0, None, empty list or dict returns False
-        return False
-    else:
-        return default_value
+
+    return bool(val)
 
 
 def add_emoji(version_changelog: dict, end: bool = False) -> dict:
@@ -163,7 +164,9 @@ def main():
     output = output.replace('%', '%25')
     output = output.replace('\n', '%0A')
     output = output.replace('\r', '%0D')
-    with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+
+    github_output = os.environ.get('GITHUB_OUTPUT')
+    with open(github_output, "w") if github_output else nullcontext(sys.stdout) as fh:
         print(f'name=markdown::{output}', file=fh)
 
     return tag
